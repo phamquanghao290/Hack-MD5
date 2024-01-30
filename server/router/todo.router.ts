@@ -7,7 +7,7 @@ runRouter.get("/", getTodo)
 // Thêm công việc
 runRouter.post("/", addTodo)
 
-// Xoa công việc
+// Xóa công việc
 runRouter.delete("/:id", deleteTodo)
 
 // Update công việc

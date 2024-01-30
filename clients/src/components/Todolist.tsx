@@ -10,41 +10,53 @@ interface Todolist1 {
 }
 
 function Todolist() {
-    const [input, setInput] = React.useState({
-        id: Math.floor(Math.random() * 100),
-        todoName: "",
-        status: false
+    const [newTodo, setNewTodo] = React.useState({
+        todoName: ""
     })
-
-    const [listTodo, setListTodo] = React.useState<Todolist1[]>([])
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInput({...input,[event.target.name]: event.target.value}) 
-    }
-
-    const handleGetTodo = async () => {
-        const result = await publicAxios.get("/api/v1/todo")
-        setListTodo(result.data)
+    const [data, setData] = React.useState([])
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewTodo({ ...newTodo, [e.target.name]: e.target.value })
     }
 
     const handleAdd = async () => {
-        const result = await publicAxios.post("/api/v1/todo", input)
-        setListTodo([...listTodo, result.data])
+
+        const res = await publicAxios.post("/api/v1/todo", { ...newTodo })
+        setData(res.data)
+        setNewTodo({
+            todoName: ""
+        })
+    }
+
+    const handleGetTodo = async () => {
+        try {
+            const res = await publicAxios.get("/api/v1/todo");
+            setData(res.data);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleDelete = async (id: number) => {
-        const result = await publicAxios.delete(`/api/v1/todo/${id}`)
-        setListTodo(listTodo.filter((item: Todolist1) => item.id !== id))
+        try {
+            const res = await publicAxios.delete(`/api/v1/todo/${id}`)
+            setData(res.data.todo)
+            alert(res.data.message)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
-    const handleEdit = async (id: number) => {
-        const result = await publicAxios.put(`/api/v1/todo/${id}`, input)
-        setListTodo(listTodo.map((item: Todolist1) => item.id === id ? result.data : item))
+    const handleChangeStatus = async (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+        const status = e.target.checked
+        console.log(status)
+        const res = await publicAxios.put(`/api/v1/todo/${id}`, { status })
+        setData(res.data.todo)
     }
+    console.log(data)
 
     React.useEffect(() => {
         handleGetTodo()
-    })
+    }, [])
 
   return (
       <div>
@@ -54,22 +66,21 @@ function Todolist() {
               <hr className='ml-6 mr-6'/>      
               <div>
                   <ul className='m-6'>
-                      {listTodo.map((item: Todolist1, index: number) => (
+                      {data?.map((item: any, index: number) => (
                           <li key={index} className='text-lg font-semibold flex items-center justify-between mt-3'>
                               <div className='flex items-center gap-3'>
-                                  <Checkbox label="" variant="soft" defaultChecked />
                                   {item.todoName}
                               </div>
                               <div className='flex gap-3'>
-                                  <Button variant="soft" className='w-[70px] h-9 ml-5' onClick={() => handleDelete(item.id)}>Delete</Button>
-                                  <Button variant="soft" className='w-[70px] h-9 ml-5' onClick={() => handleEdit(item)}>Edit</Button>
+                                <Checkbox label="" variant="soft" defaultChecked checked={item.status} onChange={(e) => handleChangeStatus(e, item.id)} />
+                                <Button variant="soft" className='w-[70px] h-9 ml-5' onClick={() => handleDelete(item.id)}>Delete</Button>           
                               </div>
                           </li>
                       ))}
                   </ul>
               </div>
                 <div className='flex m-auto justify-evenly items-center mt-6'>
-                        <Input placeholder="Type in here…" variant="outlined" color="neutral" className='w-3/4' onChange={handleChange} name="todoName" value={input.todoName} />
+                        <Input placeholder="Type in here…" variant="outlined" color="neutral" className='w-3/4' onChange={handleChange} name="todoName" value={newTodo.todoName} />
                         <Button variant="soft" className='w-[70px] h-9' onClick={handleAdd}>Add</Button>
                 </div>
           </div>

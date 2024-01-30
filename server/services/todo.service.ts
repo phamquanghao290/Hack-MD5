@@ -1,25 +1,24 @@
 import { log } from "console"
-import Pool from "../config/database"
+import db from "../config/database"
 import mysql from "mysql2"
 
 export const getTodoMysql = async () => {
-    const result = mysql.createPool(Pool)
-    return result.execute("SELECT * FROM tasks")
+    const [result] = await db.execute("SELECT * FROM tasks");
+    return result
 }
 
 export const addTodoMysql = async (name:string) => {
-    const result = mysql.createPool(Pool)
-    const list = await result.execute("INSERT INTO tasks (todoName) VALUES (?)", [name])
-    return list
+        const [result] = await db.execute("INSERT INTO tasks (todoName) VALUES (?)",[name]);  
+        return result;
 }
 
 export const deleteTodoMysql = async (id:number) => {
-    const list = await mysql.createPool(Pool).execute("DELETE FROM tasks WHERE id = ?", [id]);
-    return list  
+    const [result] = await db.execute("DELETE FROM tasks WHERE id = ?", [id]);
+    return result 
 }
 
-export const updateTodoMysql = async (id:number, name:string) => {
-    const list = await mysql.createPool(Pool).execute("UPDATE tasks SET todoName = ? WHERE id = ?", [name, id]);
-    return list
+export const updateTodoMysql = async (id:number, status:number) => {
+    const [result] = await db.execute("UPDATE tasks SET status = ? WHERE id = ?", [status, id])
+    return result   
 }
 
