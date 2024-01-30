@@ -11,8 +11,10 @@ export const getTodo = async (req: Request, res: Response) => {
 }
 
 export const addTodo = async (req: Request, res: Response) => {
-    const { name } = req.body
-    const result = await addTodoMysql(name)
+    const { todoName } = req.body
+    const result = await addTodoMysql(todoName);
+    console.log("===>",result);
+    
     const todo = await getTodoMysql()
     res.status(200).json({
         message: "Thêm thành công",
@@ -21,9 +23,9 @@ export const addTodo = async (req: Request, res: Response) => {
 }
 
 export const deleteTodo = async (req: Request, res: Response) => {
-    const { id } = req.params
-    const result = await deleteTodoMysql(Number(id));
-    const todo = await getTodoMysql()
+    const { todoId } = req.params
+    const result = await deleteTodoMysql(Number(todoId));
+    const todo = await getTodoMysql()   
     res.status(200).json({
         message: "Xoa thanh cong",
         todo

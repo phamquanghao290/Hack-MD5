@@ -13,12 +13,12 @@ export const addTodoMysql = async (name:string) => {
 }
 
 export const deleteTodoMysql = async (id:number) => {
-    const [result] = await db.execute("DELETE FROM tasks WHERE id = ?", [id]);
+    const [result] = await db.execute("DELETE FROM tasks WHERE todoId = ?", [id]);
     return result 
 }
 
 export const updateTodoMysql = async (id:number, status:number) => {
-    const [result] = await db.execute("UPDATE tasks SET status = ? WHERE id = ?", [status, id])
+    const [result] = await db.execute("UPDATE tasks SET status = ? WHERE todoId = ?", [status, id])
     return result   
 }
 
